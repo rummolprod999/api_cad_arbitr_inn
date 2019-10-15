@@ -1,7 +1,6 @@
 import logging
 
 import init_service
-import model_by_inn
 import router
 
 
@@ -13,5 +12,5 @@ def main():
 
 if __name__ == '__main__':
     main()
-    #router.app.run(debug=True)
-    model_by_inn.return_arb('5835115265')
+    router.app.run(debug=True)
+    # model_by_inn.return_arb('5835115265')

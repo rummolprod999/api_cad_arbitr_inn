@@ -3,15 +3,16 @@ import json
 import logging
 import os
 import shutil
+import time
 
 import lxml.html
 import requests
 
 import init_service
-
 from secret_keys import *
 
 id_captcha = ""
+
 
 def return_arb(inn):
     result = try_get_captcha()
@@ -21,10 +22,10 @@ def return_arb(inn):
     max_page = num_page(txt_first_page)
     if max_page > 1:
         items_list = extract_all_pages(txt_first_page, max_page, inn)
-        print(items_list)
+        return items_list
     else:
         items_list = extract_items(txt_first_page)
-        print(items_list)
+        return items_list
 
 
 def extract_all_pages(firs_page, num_page, inn):
@@ -123,9 +124,9 @@ def download_captcha(captcha_id):
     response = requests.get(url, stream=True, headers=base_headers)
     with open(path_image, 'wb') as out_file:
         shutil.copyfileobj(response.raw, out_file)
-    anticaptcha(path_image)
-    print('input captcha')
-    text = input()  # this need add anticaptcha
+    text = anticaptcha(path_image)
+    # print('input captcha')
+    # text = input()  # this need add anticaptcha
     os.remove(path_image)
     return check_captcha(captcha_id, text)
 
@@ -149,6 +150,29 @@ def anticaptcha(path_image):
     with open(path_image, "rb") as image_file:
         encoded_string = base64.b64encode(image_file.read())
     url = 'https://rucaptcha.com/in.php'
-    data = {'key': API_KEY, 'method': 'base64', 'lang': 'ru', 'json': 1, 'regsense': 1, 'body': encoded_string}
+    data = {'key': API_KEY, 'method': 'base64', 'lang': 'ru', 'json': 1, 'regsense': 1,
+            'body': encoded_string}
     r = requests.post(url, data=data)
-    text_json = r.text
+    json_data = json.loads(r.text)
+    if json_data['status'] != 1:
+        raise Exception('status service anticaptcha is not 1')
+    return get_response_anticaptcha(json_data['request'])
+
+
+def get_response_anticaptcha(req_id):
+    url = f'https://rucaptcha.com/res.php?key={API_KEY}&action=get&id={req_id}&json=1'
+    num_try = 20
+    while True:
+        if num_try < 0:
+            raise Exception('cannot get response anticaptcha after 20 attempts')
+        try:
+            r = requests.get(url)
+            json_data = json.loads(r.text)
+            if json_data['status'] != 1:
+                raise Exception(json_data['request'])
+            print(json_data['request'])
+            return json_data['request']
+        except Exception as e:
+            logging.error(e)
+            time.sleep(5)
+        num_try -= 1

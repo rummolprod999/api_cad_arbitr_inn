@@ -42,10 +42,11 @@ def extract_all_pages(firs_page, num_page, inn):
 
 def get_instances(inn, page=1):
     data = '{"Page":' + str(
-            page) + ',"Count":25,"Courts":[],"DateFrom":null,"DateTo":null,"Sides":[{"Name":"' + inn + '","Type":-1,"ExactMatch":false}],"Judges":[],"CaseNumbers":[],"WithVKSInstances":false}'
+            page) + ',"Count":25,"CaseType":"B","Courts":[],"DateFrom":null,"DateTo":null,"Sides":[{"Name":"' + inn + '","Type":-1,"ExactMatch":false}],"Judges":[],"CaseNumbers":[],"WithVKSInstances":false}'
     instance_headers['RecaptchaToken'] = id_captcha
     r = requests.post('http://kad.arbitr.ru/Kad/SearchInstances',
                       headers=instance_headers, data=data)
+    r.encoding = 'utf-8'
     if r.status_code != 200:
         raise Exception("error in function get_instances, status code is not 200")
     return r.text

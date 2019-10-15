@@ -12,7 +12,7 @@ app = Flask(__name__)
 def arbitr_by_inn(inn):
     try:
         result = model_by_inn.return_arb(inn)
-        return flask.Response(json.dumps(result), mimetype='application/json')
+        return flask.Response(json.dumps(result, ensure_ascii=False), mimetype='application/json')
     except Exception as e:
         return e
 

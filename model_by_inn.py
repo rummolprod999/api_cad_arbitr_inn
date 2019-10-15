@@ -170,7 +170,6 @@ def get_response_anticaptcha(req_id):
             json_data = json.loads(r.text)
             if json_data['status'] != 1:
                 raise Exception(json_data['request'])
-            print(json_data['request'])
             return json_data['request']
         except Exception as e:
             logging.error(e)

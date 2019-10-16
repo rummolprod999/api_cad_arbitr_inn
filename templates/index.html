@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <title>Main Page</title>
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+<div class="container h-100">
+    <div class="row h-100">
+        <div class="col-sm d-flex justify-content-center">
+            <form class="form-inline" method="post" action="/inn/">
+                <label class="sr-only" for="inlineFormInputName2">INN:</label>
+                <input type="number" class="form-control" id="inlineFormInputName2" name="inn"
+                       placeholder="XXXXXXXX" required>
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

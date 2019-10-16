@@ -13,8 +13,8 @@ TEMP_DIR = os.path.join(EXECUTE_PATH, TEMP_D)
 def create_dirs():
     if not os.path.exists(LOG_DIR):
         os.mkdir(LOG_DIR)
-    shutil.rmtree(TEMP_DIR, ignore_errors=True)
-    os.mkdir(TEMP_DIR)
+    if not os.path.exists(TEMP_DIR):
+        os.mkdir(TEMP_DIR)
 
 
 def init_logger():

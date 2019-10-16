@@ -11,13 +11,14 @@ class ControllerByInn():
         self.inn = inn
         self.mod = model.ModelByInn(self.inn)
 
-    def response_by_inn(self):
+    def response(self):
         try:
             result = self.mod.return_arb()
         except Exception as e:
             logging.error(e)
             result = e.args
         if isinstance(result, list):
+            # result.insert(0, {"Success": 1})
             return flask.Response(json.dumps(result, ensure_ascii=False), mimetype='application/json')
         elif isinstance(result, tuple):
             exeption_result = {"Success": 0, "errors": [x for x in result]}

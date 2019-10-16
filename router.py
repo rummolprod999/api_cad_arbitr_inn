@@ -14,8 +14,11 @@ app = Flask(__name__)
 @app.route('/inn/', methods=['post'])
 def arbitr_by_inn_post():
     inn = flask.request.form.get('inn')
+    if inn is None or inn == "":
+        raise Exception("inn is empty")
     c = controller.ControllerByInn(inn)
-    return c.response_by_inn()
+    return c.response()
+
 
 @app.route('/')
 def index():

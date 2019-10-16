@@ -11,7 +11,7 @@ class ControllerByInn():
         self.inn = inn
         self.mod = model.ModelByInn(self.inn)
 
-    def response(self):
+    def render(self):
         try:
             result = self.mod.return_arb()
         except Exception as e:

@@ -17,9 +17,10 @@ def arbitr_by_inn_post():
     if inn is None or inn == "":
         raise Exception("inn is empty")
     c = controller.ControllerByInn(inn)
-    return c.response()
+    return c.render()
 
 
 @app.route('/')
+@app.route('/index')
 def index():
     return flask.render_template("index.html")

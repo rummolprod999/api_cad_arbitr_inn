@@ -21,7 +21,7 @@ class ControllerByInn():
             result = e.args
         if isinstance(result, list):
             # result.insert(0, {"Success": 1})
-            return flask.Response(json.dumps(result, ensure_ascii=False), mimetype='application/json')
+            return flask.Response(json.dumps(result, ensure_ascii=False, indent=2), mimetype='application/json')
         if isinstance(result, tuple):
             exeption_result = {"Success": 0, "errors": [x for x in result]}
             return flask.Response(json.dumps(exeption_result, ensure_ascii=False), mimetype='application/json')

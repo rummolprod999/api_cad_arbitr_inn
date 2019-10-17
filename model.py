@@ -1,21 +1,21 @@
-import base64
 import json
 import logging
 import os
 import shutil
-import time
 
 import lxml.html
 import requests
 
 import init_service
-from secret_keys import *
+import rucaptcha
+from config import *
 
 
 class ModelByInn:
     def __init__(self, inn):
         self.inn = inn
         self.id_captcha = ''
+        self.anticaptcha = rucaptcha.Rucaptcha(API_KEY)
 
     def return_arb(self):
         result = self.try_get_captcha()
@@ -68,8 +68,8 @@ class ModelByInn:
             num = el.xpath('.//a')[0].text.replace('\t', '').replace('\r', '').replace('\n', '').strip(' \t\n')
             item['num'] = num
             date = el.xpath('.//a/preceding-sibling::div/span')[0].text.replace('\t', '').replace('\r', '').replace(
-                '\n',
-                '').strip(
+                    '\n',
+                    '').strip(
                     ' \t\n')
             item['date'] = date
 
@@ -137,7 +137,7 @@ class ModelByInn:
         response = requests.get(url, stream=True, headers=base_headers)
         with open(path_image, 'wb') as out_file:
             shutil.copyfileobj(response.raw, out_file)
-        text = self.anticaptcha(path_image)
+        text = self.anticaptcha.img_to_text(path_image)
         # print('input captcha')
         # text = input()  # this need add anticaptcha
         os.remove(path_image)
@@ -154,33 +154,3 @@ class ModelByInn:
             raise Exception("error in function get_captcha, success is not true")
         self.id_captcha = captcha_id
         return json_data['Result']
-
-    def anticaptcha(self, path_image):
-        encoded_string = ''
-        with open(path_image, "rb") as image_file:
-            encoded_string = base64.b64encode(image_file.read())
-        url = 'https://rucaptcha.com/in.php'
-        data = {'key': API_KEY, 'method': 'base64', 'lang': 'ru', 'json': 1, 'regsense': 1,
-                'body': encoded_string}
-        r = requests.post(url, data=data)
-        json_data = json.loads(r.text)
-        if json_data['status'] != 1:
-            raise Exception('status service anticaptcha is not 1')
-        return self.get_response_anticaptcha(json_data['request'])
-
-    def get_response_anticaptcha(self, req_id):
-        url = f'https://rucaptcha.com/res.php?key={API_KEY}&action=get&id={req_id}&json=1'
-        num_try = 20
-        while True:
-            if num_try < 0:
-                raise Exception('cannot get response anticaptcha after 20 attempts')
-            try:
-                r = requests.get(url)
-                json_data = json.loads(r.text)
-                if json_data['status'] != 1:
-                    raise Exception(json_data['request'])
-                return json_data['request']
-            except Exception as e:
-                logging.error(e)
-                time.sleep(5)
-            num_try -= 1

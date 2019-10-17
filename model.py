@@ -91,7 +91,69 @@ class ModelByInn:
         else:
             is_respondent = 0
         item['is_respondent'] = is_respondent
+        if extends_fields:
+            self.extract_extends_fields(el, item)
+
         return item
+
+    def extract_extends_fields(self, el, item):
+        plaintiffs_list = []
+        plaintiffs = el.xpath(
+                './/td[@class = "plaintiff"]/div[@class = "b-container"]/div[not (@class = "b-button-container")]')
+        for p in plaintiffs:
+            name_plaintiff_list = p.xpath('.//span[@class = "js-rolloverHtml"]/strong')
+            name_plaintiff = ''
+            if len(name_plaintiff_list) > 0:
+                name_plaintiff = name_plaintiff_list[0].text.replace('\t',
+                                                                     '').replace('\r',
+                                                                                 '').replace(
+                        '\n', '').strip(' \t\n')
+            inn_plaintiff_list = p.xpath('.//span[@class = "js-rolloverHtml"]/div')
+            inn_plaintiff = ''
+            if len(inn_plaintiff_list) > 0:
+                inn_plaintiff = inn_plaintiff_list[0].text_content().replace('\t',
+                                                                             '').replace(
+                        '\r', '').replace('\n', '').replace('ИНН:', '').strip(' \t\n')
+            address_plaintiff = ''
+            address_plaintiff_list = p.xpath('.//span[@class = "js-rolloverHtml"]/text()')
+            if len(address_plaintiff_list) > 1:
+                address_plaintiff = str(address_plaintiff_list[1]).replace('\t',
+                                                                           '').replace('\r',
+                                                                                       '').replace(
+                        '\n', '').strip(' \t\n')
+            if name_plaintiff != '' or inn_plaintiff != '':
+                plaintiffs_list.append({'name': name_plaintiff, 'inn': inn_plaintiff, 'address': address_plaintiff})
+        item['plaintiffs'] = plaintiffs_list
+        respondents_list = []
+        respondents = el.xpath(
+                './/td[@class = "respondent"]/div[@class = "b-container"]/div[not (@class = "b-button-container")]')
+
+        for r in respondents:
+            name_respondent_list = r.xpath('.//span[@class = "js-rolloverHtml"]/strong')
+            name_respondent = ''
+            if len(name_respondent_list) > 0:
+                name_respondent = name_respondent_list[0].text.replace('\t',
+                                                                       '').replace('\r',
+                                                                                   '').replace(
+                        '\n', '').strip(' \t\n')
+            inn_respondent_list = r.xpath('.//span[@class = "js-rolloverHtml"]/div')
+            inn_respondent = ''
+            if len(inn_respondent_list) > 0:
+                inn_respondent = inn_respondent_list[0].text_content().replace('\t',
+                                                                               '').replace(
+                        '\r', '').replace('\n', '').replace('ИНН:', '').strip(' \t\n')
+            address_respondent = ''
+            address_respondent_list = r.xpath('.//span[@class = "js-rolloverHtml"]/text()')
+            if len(address_respondent_list) > 1:
+                address_respondent = str(address_respondent_list[1]).replace('\t',
+                                                                             '').replace('\r',
+                                                                                         '').replace(
+                        '\n', '').strip(' \t\n')
+            if name_respondent != '' or inn_respondent != '':
+                respondents_list.append({'name': name_respondent, 'inn': inn_respondent, 'address': address_respondent})
+        item['respondents'] = respondents_list
+        type_item = el.xpath('.//td[@class = "num"]/div[@class = "b-container"]/div')[0].get('class').strip(' \t\n')
+        item['type'] = type_item
 
     def try_get_captcha(self):
         try_count = 10

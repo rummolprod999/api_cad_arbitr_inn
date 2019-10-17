@@ -7,15 +7,14 @@ import lxml.html
 import requests
 
 import init_service
-import rucaptcha
 from config import *
 
 
 class ModelByInn:
-    def __init__(self, inn):
+    def __init__(self, inn, anticaptcha):
         self.inn = inn
         self.id_captcha = ''
-        self.anticaptcha = rucaptcha.Rucaptcha(API_KEY)
+        self.anticaptcha = anticaptcha
 
     def return_arb(self):
         result = self.try_get_captcha()
@@ -43,7 +42,8 @@ class ModelByInn:
 
     def get_instances(self, page=1):
         data = '{"Page":' + str(
-                page) + ',"Count":25' + (',"CaseType":"B"' if not all_items else '') + ',"Courts":[],"DateFrom":null,"DateTo":null,"Sides":[{"Name":"' + self.inn + '","Type":-1,"ExactMatch":false}],"Judges":[],"CaseNumbers":[],"WithVKSInstances":false}'
+                page) + ',"Count":25' + (
+                   ',"CaseType":"B"' if not all_items else '') + ',"Courts":[],"DateFrom":null,"DateTo":null,"Sides":[{"Name":"' + self.inn + '","Type":-1,"ExactMatch":false}],"Judges":[],"CaseNumbers":[],"WithVKSInstances":false}'
         instance_headers['RecaptchaToken'] = self.id_captcha
         r = requests.post('http://kad.arbitr.ru/Kad/SearchInstances',
                           headers=instance_headers, data=data)

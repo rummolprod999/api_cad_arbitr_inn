@@ -3,13 +3,15 @@ import logging
 
 import flask
 
+import config
 import model
+import rucaptcha
 
 
 class ControllerByInn():
     def __init__(self, inn):
         self.inn = inn
-        self.mod = model.ModelByInn(self.inn)
+        self.mod = model.ModelByInn(self.inn, rucaptcha.Rucaptcha(config.API_KEY))
 
     def render(self):
         try:
@@ -20,11 +22,10 @@ class ControllerByInn():
         if isinstance(result, list):
             # result.insert(0, {"Success": 1})
             return flask.Response(json.dumps(result, ensure_ascii=False), mimetype='application/json')
-        elif isinstance(result, tuple):
+        if isinstance(result, tuple):
             exeption_result = {"Success": 0, "errors": [x for x in result]}
             return flask.Response(json.dumps(exeption_result, ensure_ascii=False), mimetype='application/json')
-        elif isinstance(result, Exception):
+        if isinstance(result, Exception):
             exeption_result = {"Success": 0, "errors": result.args}
             return flask.Response(json.dumps(exeption_result, ensure_ascii=False), mimetype='application/json')
-        else:
-            return flask.Response(json.dumps([], ensure_ascii=False), mimetype='application/json')
+        return flask.Response(json.dumps([], ensure_ascii=False), mimetype='application/json')

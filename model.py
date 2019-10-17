@@ -43,7 +43,7 @@ class ModelByInn:
 
     def get_instances(self, page=1):
         data = '{"Page":' + str(
-                page) + ',"Count":25,"CaseType":"B","Courts":[],"DateFrom":null,"DateTo":null,"Sides":[{"Name":"' + self.inn + '","Type":-1,"ExactMatch":false}],"Judges":[],"CaseNumbers":[],"WithVKSInstances":false}'
+                page) + ',"Count":25' + (',"CaseType":"B"' if not all_items else '') + ',"Courts":[],"DateFrom":null,"DateTo":null,"Sides":[{"Name":"' + self.inn + '","Type":-1,"ExactMatch":false}],"Judges":[],"CaseNumbers":[],"WithVKSInstances":false}'
         instance_headers['RecaptchaToken'] = self.id_captcha
         r = requests.post('http://kad.arbitr.ru/Kad/SearchInstances',
                           headers=instance_headers, data=data)

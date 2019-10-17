@@ -62,34 +62,36 @@ class ModelByInn:
         elements = []
         items = tree.xpath('//tr')
         for el in items:
-            item = {}
-            url = el.xpath('.//a')[0].get('href').strip(' \t\n')
-            item['url'] = url
-            num = el.xpath('.//a')[0].text.replace('\t', '').replace('\r', '').replace('\n', '').strip(' \t\n')
-            item['num'] = num
-            date = el.xpath('.//a/preceding-sibling::div/span')[0].text.replace('\t', '').replace('\r', '').replace(
-                    '\n',
-                    '').strip(
-                    ' \t\n')
-            item['date'] = date
-
-            plaintiff_text = el.xpath('.//td[@class = "plaintiff"]')[
-                0].text_content().replace('\t', '').replace('\r', '').replace('\n', '').strip(' \t\n')
-            if self.inn in plaintiff_text:
-                is_plaintiff = 1
-            else:
-                is_plaintiff = 0
-            item['is_plaintiff'] = is_plaintiff
-
-            respondent_text = el.xpath('.//td[@class = "respondent"]')[
-                0].text_content().replace('\t', '').replace('\r', '').replace('\n', '').strip(' \t\n')
-            if self.inn in respondent_text:
-                is_respondent = 1
-            else:
-                is_respondent = 0
-            item['is_respondent'] = is_respondent
+            item = self.create_item(el)
             elements.append(item)
         return elements
+
+    def create_item(self, el):
+        item = {}
+        url = el.xpath('.//a')[0].get('href').strip(' \t\n')
+        item['url'] = url
+        num = el.xpath('.//a')[0].text.replace('\t', '').replace('\r', '').replace('\n', '').strip(' \t\n')
+        item['num'] = num
+        date = el.xpath('.//a/preceding-sibling::div/span')[0].text.replace('\t', '').replace('\r', '').replace(
+                '\n',
+                '').strip(
+                ' \t\n')
+        item['date'] = date
+        plaintiff_text = el.xpath('.//td[@class = "plaintiff"]')[
+            0].text_content().replace('\t', '').replace('\r', '').replace('\n', '').strip(' \t\n')
+        if self.inn in plaintiff_text:
+            is_plaintiff = 1
+        else:
+            is_plaintiff = 0
+        item['is_plaintiff'] = is_plaintiff
+        respondent_text = el.xpath('.//td[@class = "respondent"]')[
+            0].text_content().replace('\t', '').replace('\r', '').replace('\n', '').strip(' \t\n')
+        if self.inn in respondent_text:
+            is_respondent = 1
+        else:
+            is_respondent = 0
+        item['is_respondent'] = is_respondent
+        return item
 
     def try_get_captcha(self):
         try_count = 10

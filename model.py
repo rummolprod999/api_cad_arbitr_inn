@@ -17,6 +17,7 @@ class ModelByInn:
         self.anticaptcha = anticaptcha
 
     def return_arb(self):
+        # self.get_cookies()
         result = self.try_get_captcha()
         if not result:
             raise Exception("the captcha was not gotten")
@@ -46,7 +47,7 @@ class ModelByInn:
                    ',"CaseType":"B"' if not all_items else '') + ',"Courts":[],"DateFrom":null,"DateTo":null,"Sides":[{"Name":"' + self.inn + '","Type":-1,"ExactMatch":false}],"Judges":[],"CaseNumbers":[],"WithVKSInstances":false}'
         instance_headers['RecaptchaToken'] = self.id_captcha
         r = requests.post('http://kad.arbitr.ru/Kad/SearchInstances',
-                          headers=instance_headers, data=data)
+                          headers=instance_headers, data=data.encode('utf-8'))
         r.encoding = 'utf-8'
         if r.status_code != 200:
             raise Exception("error in function get_instances, status code is not 200")
